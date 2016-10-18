@@ -1,13 +1,18 @@
 package spring.controler;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import spring.services.classes.UserService;
+import spring.entities.UserDbE;
+import spring.services.classes.UserServiceImpl;
 import spring.services.interfaces.UserServiseI;
 
 @Controller
@@ -17,35 +22,24 @@ public class UserControler {
 	UserServiseI m_userServise;
 	
 	public UserControler (){
-		m_userServise = new UserService ();
+		m_userServise = new UserServiceImpl ();
 	}
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
     @ResponseBody
-    String orbartal() {
-        return "Hello from no name";
+    Collection <UserDbE> allusers() {
+        return m_userServise.getAll();
     }
     
     @RequestMapping(value = "/{name}", method = RequestMethod.GET)
     @ResponseBody
-    String ayala(@PathVariable String name) {
-        return "Hello to "+ name;
+    UserDbE ayala(@PathVariable String name) {
+        return m_userServise.get(name);
     }
     
     @RequestMapping(value = "/", method = RequestMethod.POST)
     @ResponseBody
-    String addUserName(@RequestParam("userName") String userName) {
-        return m_userServise.add(userName);
-
+    UserDbE addUserName(@RequestBody UserDbE user) {
+        return m_userServise.add(user);
     }
-    
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    @ResponseBody
-    String allusers() {
-        return m_userServise.getAll();
-    }
-    
-    
-
-
 }

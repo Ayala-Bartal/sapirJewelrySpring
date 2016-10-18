@@ -1,9 +1,16 @@
 package spring.services.interfaces;
 
+import java.util.Collection;
+import java.util.List;
+
+import spring.entities.UserDbE;
+
 public interface UserServiseI {
 	
-	public String add (String strUserName);
+	public UserDbE add (UserDbE user);
 	
-	public String getAll ();
+	public Collection<UserDbE> getAll ();
+
+	public UserDbE get(String name);
 
 }

@@ -7,10 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableAutoConfiguration
 @ComponentScan
 
-public class Main {
+public class MainServer {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Main.class, args);
+		SpringApplication.run(MainServer.class, args);
 	}
 
 }
