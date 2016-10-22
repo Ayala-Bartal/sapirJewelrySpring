@@ -2,8 +2,11 @@ package spring.repository.classes;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +15,7 @@ import java.util.TreeMap;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFName;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -106,12 +110,7 @@ public class UserRepositoryInExcel implements UserRepositoryI {
        
 	}
 
-	public Collection<UserDbE> getAll() {
-		
-		return null;
-	}
-	
-	private  Row findRow (XSSFSheet sheet, String userName) {
+		private  Row findRow (XSSFSheet sheet, String userName) {
 	    for (Row row : sheet) {
 	    	Cell cell = row.getCell(0);
 	    	String cellUserName = cell.getStringCellValue();
@@ -123,14 +122,35 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 	}
 	
 	private UserDbE convertRowToUser (Row row){
-		UserDbE user = new UserDbE();
-		user.setFirstName(row.getCell(0).getStringCellValue()+"");
-		user.setLastName(row.getCell(1).getStringCellValue()+"");
-		user.setPhoneNumber(row.getCell(2).getNumericCellValue()+"");
-		user.setEmail(row.getCell(3).getStringCellValue()+"");
-		user.setBirthday(row.getCell(4).getDateCellValue()+"");
-		user.setWeddingDate(row.getCell(5).getDateCellValue()+"");
-		return user;
+		
+		try{
+			String firstName = getStringFromCell(row.getCell(0)); //.getStringCellValue()+"";
+			String lastName = getStringFromCell(row.getCell(1));
+			String email = getStringFromCell(row.getCell(2));
+			String phoneNumber = getStringFromCell(row.getCell(3));
+			String birthday = getStringFromCell(row.getCell(4));
+			String weddingDate = getStringFromCell(row.getCell(5));
+			UserDbE user =new  UserDbE (firstName, lastName, email, phoneNumber, birthday,weddingDate);
+			return user;
+		}catch(Exception e){
+			UserDbE user = new  UserDbE ();
+			return user;
+		}
+		
+	}
+	
+	
+
+	private String getStringFromCell(Cell cell) {
+		CellType cellType = cell.getCellTypeEnum(); //TODO: 
+		switch(cellType){
+			case STRING : return cell.getStringCellValue();
+			case NUMERIC : return cell.getNumericCellValue()+"";
+			case BOOLEAN : return cell.getBooleanCellValue()+"";
+			case FORMULA : return cell.getCellFormula()+"";
+		//	case DATE : return cell.getDateCellValue()+"";
+			default: return "Unknown";
+		}
 	}
 
 	public UserDbE get(String name) {
@@ -147,5 +167,33 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 		}
 		
 	}
+	
+	public Collection<UserDbE> getAll() {
+		
+		try {
+			InputStream fs1 = new FileInputStream(m_filePath);
+			m_workbook = new XSSFWorkbook(fs1);
+			XSSFSheet sheet1 = m_workbook.getSheet(m_sheetName);
+			ArrayList<UserDbE> lstUsers = new ArrayList<UserDbE>();
+			for (int i = 1; i<=sheet1.getLastRowNum(); i++){
+				Row row = sheet1.getRow(i);
+				UserDbE user = convertRowToUser(row);
+				lstUsers.add(user);
+			}
+			return lstUsers;
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return null;
+	}
+	
+
 
 }

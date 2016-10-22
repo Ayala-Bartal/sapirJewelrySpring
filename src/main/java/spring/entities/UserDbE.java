@@ -1,12 +1,30 @@
 package spring.entities;
 
-public class UserDbE {
+import java.io.Serializable;
+
+public class UserDbE implements Serializable{
+
 	protected String firstName;
 	protected String lastName;
 	protected String email;
 	protected String phoneNumber;
 	protected String birthday;
 	protected String weddingDate;
+	
+	public UserDbE(){}
+	
+	public UserDbE(String firstName, String lastName, String email, String phoneNumber, String birthday,
+			String weddingDate) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.birthday = birthday;
+		this.weddingDate = weddingDate;
+	}
+	
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -43,7 +61,13 @@ public class UserDbE {
 	public void setWeddingDate(String weddingDay) {
 		this.weddingDate = weddingDay;
 	}
-
 	
-	
+	@Override
+	public String toString() {
+		return 	"UserDbE "
+					+ "[firstName=" + firstName + ", lastName=" + lastName +
+					", email=" + email + ", phoneNumber=" + phoneNumber + 
+					", birthday=" + birthday + ", weddingDate=" + weddingDate + 
+				"]";
+	}
 }
