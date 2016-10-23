@@ -12,6 +12,7 @@ import spring.services.classes.UserServiceImpl;
 import spring.services.interfaces.UserServiseI;
 
 @Controller
+@RequestMapping("/users")
 public class UserControler {
 	
 	UserServiseI m_userServise;
@@ -20,19 +21,19 @@ public class UserControler {
 		m_userServise = new UserServiceImpl ();
 	}
 	
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
     Collection <UserDbE> allusers() throws Exception {
         return m_userServise.getAll();
     }
     
-    @RequestMapping(value = "/{name}", method = RequestMethod.GET)
+    @RequestMapping(value = "{name}", method = RequestMethod.GET)
     @ResponseBody
     UserDbE ayala(@PathVariable String name) throws Exception {
         return m_userServise.get(name);
     }
     
-    @RequestMapping(value = "/", method = RequestMethod.POST)
+    @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
     UserDbE addUserName(@RequestBody UserDbE user) throws Exception {
         return m_userServise.add(user);
