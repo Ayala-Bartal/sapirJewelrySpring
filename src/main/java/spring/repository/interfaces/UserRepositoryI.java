@@ -8,10 +8,10 @@ import spring.entities.UserDbE;
 
 public interface UserRepositoryI {
 	
-	public UserDbE save (UserDbE user);
+	public UserDbE save (UserDbE user) throws Exception;
 	
-	public Collection <UserDbE> getAll();
+	public Collection <UserDbE> getAll() throws Exception; 
 
-	public UserDbE get(String name);
+	public UserDbE get(String name) throws Exception;
 
 }

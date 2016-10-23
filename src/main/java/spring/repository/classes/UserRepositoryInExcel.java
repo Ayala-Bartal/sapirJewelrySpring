@@ -2,26 +2,18 @@ package spring.repository.classes;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFName;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import spring.entities.UserDbE;
 import spring.entities.UserDbE;
 import spring.repository.interfaces.UserRepositoryI;
 
@@ -31,20 +23,13 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 	static XSSFWorkbook m_workbook = new XSSFWorkbook(); 
 	static String m_sheetName = "a";
 
-	public UserDbE save(UserDbE user) {
+	///////////////
+	// Add user //
+	/////////////
+	public UserDbE save(UserDbE user) throws Exception {
 		Map<String, Object[]> mapData = getData(user);
-		try {
-			prepareDataToExcel(m_workbook, mapData);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-			writeWorkbookToFile(m_workbook, m_filePath);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		prepareDataToExcel(m_workbook, mapData);
+		writeWorkbookToFile(m_workbook, m_filePath);
 		return user;
 	}
 	
@@ -56,8 +41,7 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 	}
 	
 	private void prepareDataToExcel(XSSFWorkbook workbook, Map<String, Object[]> mapData) throws Exception {
-		InputStream fs = new FileInputStream(m_filePath);
-		m_workbook = new XSSFWorkbook(fs);
+		reloadData ();
 		XSSFSheet sheet1 = m_workbook.getSheet(m_sheetName);
 		if (sheet1 != null){
 			addDataToExistingSheet(sheet1, mapData);
@@ -65,6 +49,11 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 			XSSFSheet sheet2 = m_workbook.createSheet(m_sheetName);
 			addDataToNewSheet(sheet2, mapData);
 		}
+	}
+	
+	private void reloadData () throws Exception{
+		InputStream fs = new FileInputStream(m_filePath);
+		m_workbook = new XSSFWorkbook(fs);
 	}
 	
 	private static void addDataToExistingSheet(XSSFSheet sheet1, Map<String, Object[]> mapData) {
@@ -101,16 +90,15 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 
 
 	private static void writeWorkbookToFile(XSSFWorkbook workbook, String filePath) throws Exception {
-		
-			FileOutputStream out = new FileOutputStream(new File(filePath));
-		       workbook.write(out);
-		       out.close();
-		       System.out.println(filePath+" written successfully on disk.");
+		FileOutputStream out = new FileOutputStream(new File(filePath));
+	       workbook.write(out);
+	       out.close();
+	       System.out.println(filePath+" written successfully on disk.");
 		
        
 	}
 
-		private  Row findRow (XSSFSheet sheet, String userName) {
+	private  Row findRow (XSSFSheet sheet, String userName) throws Exception {
 	    for (Row row : sheet) {
 	    	Cell cell = row.getCell(0);
 	    	String cellUserName = cell.getStringCellValue();
@@ -118,11 +106,10 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 	    			return row;
 	        }
 	    }
-	    return null;
+	    throw new Exception ("Not found user ("+userName+") in repository");
 	}
 	
-	private UserDbE convertRowToUser (Row row){
-		
+	private UserDbE convertRowToUser (Row row) throws Exception{
 		try{
 			String firstName = getStringFromCell(row.getCell(0)); //.getStringCellValue()+"";
 			String lastName = getStringFromCell(row.getCell(1));
@@ -133,13 +120,9 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 			UserDbE user =new  UserDbE (firstName, lastName, email, phoneNumber, birthday,weddingDate);
 			return user;
 		}catch(Exception e){
-			UserDbE user = new  UserDbE ();
-			return user;
+			throw new Exception ("Faild to convert row to user : " + e.getMessage());
 		}
-		
 	}
-	
-	
 
 	private String getStringFromCell(Cell cell) {
 		CellType cellType = cell.getCellTypeEnum(); //TODO: 
@@ -152,48 +135,32 @@ public class UserRepositoryInExcel implements UserRepositoryI {
 			default: return "Unknown";
 		}
 	}
-
-	public UserDbE get(String name) {
-		try{
-			InputStream fs = new FileInputStream(m_filePath);
-			m_workbook = new XSSFWorkbook(fs);
-			XSSFSheet sheet1 = m_workbook.getSheet(m_sheetName);
-			Row row = findRow(sheet1, name);
+	
+	///////////////
+	// get user //
+	/////////////
+	public UserDbE get(String name) throws Exception {
+		reloadData ();
+		XSSFSheet sheet1 = m_workbook.getSheet(m_sheetName);
+		Row row = findRow(sheet1, name);
+		UserDbE user = convertRowToUser(row);
+		return user;
+	}
+	
+	
+	
+	///////////////
+	// get all  //
+	/////////////
+	public Collection<UserDbE> getAll() throws Exception {
+		reloadData ();
+		XSSFSheet sheet1 = m_workbook.getSheet(m_sheetName);
+		ArrayList<UserDbE> lstUsers = new ArrayList<UserDbE>();
+		for (int i = 1; i<=sheet1.getLastRowNum(); i++){
+			Row row = sheet1.getRow(i);
 			UserDbE user = convertRowToUser(row);
-			return user;
-		}catch(Exception e){
-			e.getMessage();
-			return null;
+			lstUsers.add(user);
 		}
-		
+		return lstUsers;
 	}
-	
-	public Collection<UserDbE> getAll() {
-		
-		try {
-			InputStream fs1 = new FileInputStream(m_filePath);
-			m_workbook = new XSSFWorkbook(fs1);
-			XSSFSheet sheet1 = m_workbook.getSheet(m_sheetName);
-			ArrayList<UserDbE> lstUsers = new ArrayList<UserDbE>();
-			for (int i = 1; i<=sheet1.getLastRowNum(); i++){
-				Row row = sheet1.getRow(i);
-				UserDbE user = convertRowToUser(row);
-				lstUsers.add(user);
-			}
-			return lstUsers;
-			
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		return null;
-	}
-	
-
-
 }
