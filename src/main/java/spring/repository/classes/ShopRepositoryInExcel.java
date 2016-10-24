@@ -32,7 +32,7 @@ public class ShopRepositoryInExcel implements ShopRepositoryI{
 	}
 	private static Map<String, Object[]> getData(ShopDbE shop) {
 		Map<String, Object[]> mapData = new TreeMap<String, Object[]>();
-		Object[] a = new Object[] {shop.getName(), shop.getPic(), shop.getContant()};
+		Object[] a = new Object[] {shop.getName(), shop.getPicPath(), shop.getContant()};
 	    mapData.put("1", a);
 		return mapData;
 	}

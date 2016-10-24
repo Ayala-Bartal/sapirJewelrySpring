@@ -2,14 +2,14 @@ package spring.entities;
 
 public class ShopDbE {
 	protected String name;
-	protected String pic;
+	protected String picPath;
 	protected String contant;
 	
 	
-	public ShopDbE(String name, String pic, String contant) {
+	public ShopDbE(String name, String picPath, String contant) {
 		super();
 		this.name = name;
-		this.pic = pic;
+		this.picPath = picPath;
 		this.contant = contant;
 	}
 	
@@ -19,11 +19,11 @@ public class ShopDbE {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getPic() {
-		return pic;
+	public String getPicPath() {
+		return picPath;
 	}
-	public void setPic(String pic) {
-		this.pic = pic;
+	public void setPicPath(String pic) {
+		this.picPath = pic;
 	}
 	public String getContant() {
 		return contant;
