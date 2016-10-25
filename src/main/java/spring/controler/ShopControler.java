@@ -2,8 +2,6 @@ package spring.controler;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.OutputStream;
 import java.util.Collection;
 
 import javax.servlet.ServletContext;
@@ -17,13 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import spring.entities.ShopDbE;
-import spring.entities.UserDbE;
 import spring.services.classes.ShopServiceImpl;
-import spring.services.classes.UserServiceImpl;
 import spring.services.interfaces.ShopServiseI;
-import spring.services.interfaces.UserServiseI;
 
 @Controller
 @RequestMapping("/shop")
@@ -53,16 +47,14 @@ public class ShopControler {
         return m_shopServise.add(user);
     }
     
-    @RequestMapping(value = "image", method = RequestMethod.GET)
+    @RequestMapping(value = "image/{name}", method = RequestMethod.GET)
     public void doDownload(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        String fullPath = "C:\\1\\sapirPphoto\\446707.jpg";   
-        File downloadFile = new File(fullPath);
-        FileInputStream inputStream = new FileInputStream(downloadFile);
-    	setMimeType(request, response, fullPath);
+            HttpServletResponse response, @PathVariable String name) throws Exception {
+    	File downloadFile = m_shopServise.getImage(name);
+    	IOUtils.copy(new FileInputStream(downloadFile), response.getOutputStream());
+    	setMimeType(request, response, downloadFile.getAbsolutePath());
         response.setContentLength((int) downloadFile.length());
-        OutputStream outStream = response.getOutputStream();
-        IOUtils.copy(inputStream, outStream);
+
     }
 
 	private void setMimeType(HttpServletRequest request, HttpServletResponse response, String fullPath) {

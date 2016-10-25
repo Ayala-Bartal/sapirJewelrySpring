@@ -1,5 +1,6 @@
 package spring.services.classes;
 
+import java.io.File;
 import java.util.Collection;
 
 import spring.entities.ShopDbE;
@@ -31,5 +32,12 @@ public class ShopServiceImpl implements ShopServiseI {
 
 	public ShopDbE get(String name) throws Exception {
 		return m_shopRepository.get(name);
+	}
+
+	public File getImage(String name) throws Exception {
+		ShopDbE current = get(name);
+		String fullPath = current.getPicPath();  
+        File downloadFile = new File(fullPath);
+        return downloadFile;
 	}
 }

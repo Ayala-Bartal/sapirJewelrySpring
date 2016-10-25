@@ -1,5 +1,6 @@
 package spring.services.interfaces;
 
+import java.io.File;
 import java.util.Collection;
 
 import spring.entities.ShopDbE;
@@ -12,4 +13,6 @@ public interface ShopServiseI {
 	public Collection<ShopDbE> getAll () throws Exception;
 
 	public ShopDbE get(String name) throws Exception;
+
+	public File getImage(String string)  throws Exception;
 }
