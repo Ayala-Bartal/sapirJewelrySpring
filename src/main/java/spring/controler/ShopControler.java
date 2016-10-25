@@ -1,6 +1,16 @@
 package spring.controler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 import java.util.Collection;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.util.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,4 +52,26 @@ public class ShopControler {
     ShopDbE addUserName(@RequestBody ShopDbE user) throws Exception {
         return m_shopServise.add(user);
     }
+    
+    @RequestMapping(value = "image", method = RequestMethod.GET)
+    public void doDownload(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+        String fullPath = "C:\\1\\sapirPphoto\\446707.jpg";   
+        File downloadFile = new File(fullPath);
+        FileInputStream inputStream = new FileInputStream(downloadFile);
+    	setMimeType(request, response, fullPath);
+        response.setContentLength((int) downloadFile.length());
+        OutputStream outStream = response.getOutputStream();
+        IOUtils.copy(inputStream, outStream);
+    }
+
+	private void setMimeType(HttpServletRequest request, HttpServletResponse response, String fullPath) {
+        ServletContext context = request.getServletContext();
+        String mimeType = context.getMimeType(fullPath);
+        if (mimeType == null) {
+            // set to binary type if MIME mapping not found
+            mimeType = "application/octet-stream";
+        }
+        response.setContentType(mimeType);
+	}
 }
