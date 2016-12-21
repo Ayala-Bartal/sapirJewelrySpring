@@ -2,15 +2,10 @@ package spring.services.classes;
 
 import java.io.File;
 import java.util.Collection;
-
 import spring.entities.ShopDbE;
-import spring.entities.UserDbE;
 import spring.repository.classes.ShopRepositoryInExcel;
-import spring.repository.classes.UserRepositoryInExcel;
 import spring.repository.interfaces.ShopRepositoryI;
-import spring.repository.interfaces.UserRepositoryI;
 import spring.services.interfaces.ShopServiseI;
-import spring.services.interfaces.UserServiseI;
 
 public class ShopServiceImpl implements ShopServiseI {
 	
@@ -29,9 +24,9 @@ public class ShopServiceImpl implements ShopServiseI {
 		return lstShops;
 	}
 
-
+	
 	public ShopDbE get(String name) throws Exception {
-		return m_shopRepository.get(name);
+		return (ShopDbE) m_shopRepository.get(name);
 	}
 
 	public File getImage(String name) throws Exception {

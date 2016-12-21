@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserServiseI {
 
 
 	public UserDbE get(String name) throws Exception {
-		return m_usersRepository.get(name);
+		return (UserDbE) m_usersRepository.get(name);
 	}
 
 }

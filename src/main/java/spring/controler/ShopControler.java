@@ -31,7 +31,7 @@ public class ShopControler {
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
     @ResponseBody
-    Collection <ShopDbE> allusers() throws Exception {
+    Collection <ShopDbE> getAll() throws Exception {
         return m_shopServise.getAll();
     }
     
@@ -43,7 +43,7 @@ public class ShopControler {
     
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ResponseBody
-    ShopDbE addUserName(@RequestBody ShopDbE user) throws Exception {
+    ShopDbE add (@RequestBody ShopDbE user) throws Exception {
         return m_shopServise.add(user);
     }
     

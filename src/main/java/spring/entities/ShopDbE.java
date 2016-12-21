@@ -1,5 +1,7 @@
 package spring.entities;
 
+
+
 public class ShopDbE {
 	protected String name;
 	protected String picPath;
